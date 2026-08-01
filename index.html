@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Clima</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-page:#15161b;
+    --bg-widget:#2c303b;
+    --white:#ffffff;
+    --dim:rgba(255,255,255,0.55);
+    --dim-strong:rgba(255,255,255,0.8);
+    --divider:rgba(255,255,255,0.08);
+    --track:rgba(255,255,255,0.12);
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{
+    margin:0;
+    min-height:100%;
+    background:transparent;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:0;
+    font-family:'Fredoka', "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    color:var(--white);
+  }
+
+  .wrap{
+    width:440px;
+    max-width:100%;
+  }
+
+  .toolbar{
+    display:flex;
+    gap:8px;
+    margin-bottom:12px;
+    max-height:44px;
+    opacity:1;
+    overflow:hidden;
+    transition:max-height .25s ease, opacity .2s ease, margin-bottom .25s ease;
+  }
+  .toolbar.hidden{
+    max-height:0;
+    opacity:0;
+    margin-bottom:0;
+    pointer-events:none;
+  }
+  .city-input{
+    flex:1;
+    background: rgba(255,255,255,0.08);
+    border:1px solid rgba(255,255,255,0.14);
+    border-radius:10px;
+    padding:8px 12px;
+    color:var(--white);
+    font-family:inherit;
+    font-size:13px;
+    outline:none;
+  }
+  .city-input::placeholder{color:rgba(255,255,255,0.35);}
+  .go-btn{
+    background: rgba(255,255,255,0.1);
+    border:1px solid rgba(255,255,255,0.16);
+    color:var(--white);
+    border-radius:10px;
+    padding:8px 14px;
+    font-family:inherit;
+    font-size:13px;
+    font-weight:600;
+    cursor:pointer;
+  }
+  .go-btn:active{background: rgba(255,255,255,0.2);}
+
+  .widget{
+    background:var(--bg-widget);
+    border-radius:24px;
+    padding:25px 25px 14px;
+    display:flex;
+    flex-direction:column;
+    box-shadow:0 10px 30px rgba(0,0,0,0.35);
+  }
+
+  .widget-row{
+    display:flex;
+    gap:22px;
+    align-items:stretch;
+  }
+
+  /* ---------- bloque izquierdo ---------- */
+  .left{
+    flex:0 0 auto;
+    width:150px;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+  }
+
+  .city-row{
+    display:flex;
+    align-items:center;
+    gap:5px;
+    cursor:pointer;
+    user-select:none;
+  }
+  .city-name{
+    font-size:16px;
+    font-weight:600;
+    letter-spacing:0.1px;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+
+  .big-temp{
+    font-size:64px;
+    font-weight:300;
+    line-height:1;
+    margin:6px 0 8px;
+    letter-spacing:-1.5px;
+  }
+
+  .desc-text{
+    font-size:13px;
+    font-weight:400;
+    color:var(--dim);
+    line-height:1.35;
+    max-width:150px;
+  }
+
+  /* ---------- bloque derecho: lista 5 dias ---------- */
+  .right{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    border-left:1px solid var(--divider);
+    padding-left:20px;
+  }
+
+  .day-row{
+    display:grid;
+    grid-template-columns: 30px 22px 38px 24px 1fr 26px;
+    align-items:center;
+    column-gap:6px;
+    padding:5px 0;
+  }
+
+  .day-name{
+    font-size:13px;
+    font-weight:600;
+    color:var(--white);
+  }
+
+  .day-icon{
+    width:19px;
+    height:19px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .day-icon svg{width:100%; height:100%;}
+
+  .day-pop{
+    font-size:11.5px;
+    font-weight:600;
+    color:#6fc3ff;
+    text-align:left;
+    font-variant-numeric:tabular-nums;
+  }
+
+  .temp-min{
+    font-size:13px;
+    color:var(--dim);
+    text-align:right;
+    font-variant-numeric:tabular-nums;
+  }
+
+  .bar-track{
+    position:relative;
+    height:3px;
+    border-radius:2px;
+    background:var(--track);
+  }
+  .bar-fill{
+    position:absolute;
+    top:0; bottom:0;
+    border-radius:2px;
+  }
+
+  .temp-max{
+    font-size:13px;
+    font-weight:600;
+    color:var(--white);
+    text-align:right;
+    font-variant-numeric:tabular-nums;
+  }
+
+  .status{
+    text-align:center;
+    font-size:12.5px;
+    color:var(--dim);
+    padding:10px 0 0;
+  }
+  .status.error{ color:#ff9a9a; }
+
+  .footer-brand{
+    text-align:center;
+    font-size:10px;
+    font-weight:600;
+    letter-spacing:0.4px;
+    color:rgba(255,255,255,0.12);
+    margin-top:4px;
+    user-select:none;
+  }
+
+  /* ==================================================
+     RESPONSIVE: tablets (≤600px)
+     ================================================== */
+  @media (max-width: 600px){
+    .wrap{
+      width:100%;
+      max-width:380px;
+    }
+    .widget{
+      padding:22px 22px 12px;
+      border-radius:20px;
+    }
+    .widget-row{
+      gap:16px;
+    }
+    .left{
+      width:130px;
+    }
+    .big-temp{
+      font-size:56px;
+    }
+    .city-name{
+      font-size:15px;
+    }
+    .desc-text{
+      font-size:12.5px;
+      max-width:130px;
+    }
+    .right{
+      padding-left:16px;
+    }
+    .day-row{
+      grid-template-columns: 28px 20px 34px 22px 1fr 24px;
+      column-gap:5px;
+    }
+    .day-name, .temp-min, .temp-max{
+      font-size:12.5px;
+    }
+    .day-pop{
+      font-size:11px;
+    }
+  }
+
+  /* ==================================================
+     RESPONSIVE: celulares (≤460px) — layout apilado
+     ================================================== */
+  @media (max-width: 460px){
+    .wrap{
+      max-width:340px;
+    }
+    .widget{
+      padding:20px 18px 12px;
+    }
+    .widget-row{
+      flex-direction:column;
+      gap:18px;
+    }
+    .left{
+      width:100%;
+      align-items:center;
+      text-align:center;
+    }
+    .left > div{
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+    }
+    .city-row{
+      justify-content:center;
+    }
+    .desc-text{
+      max-width:100%;
+      text-align:center;
+    }
+    .right{
+      border-left:none;
+      border-top:1px solid var(--divider);
+      padding-left:0;
+      padding-top:16px;
+      width:100%;
+    }
+    .day-row{
+      grid-template-columns: 32px 22px 38px 24px 1fr 28px;
+      column-gap:8px;
+      padding:6px 0;
+    }
+    .day-name, .temp-min, .temp-max{
+      font-size:13px;
+    }
+  }
+
+  /* ==================================================
+     RESPONSIVE: celulares chicos (≤340px)
+     ================================================== */
+  @media (max-width: 340px){
+    .big-temp{
+      font-size:48px;
+    }
+    .city-name{
+      font-size:14px;
+    }
+    .day-row{
+      grid-template-columns: 28px 20px 32px 22px 1fr 24px;
+      column-gap:5px;
+    }
+    .day-name, .temp-min, .temp-max{
+      font-size:12px;
+    }
+    .day-pop{
+      font-size:10.5px;
+    }
+    .day-icon{
+      width:17px;
+      height:17px;
+    }
+  }
+
+  /* evita el zoom automático de iOS/Android al enfocar el input en pantallas chicas */
+  @media (max-width: 600px){
+    .city-input{
+      font-size:16px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <div class="toolbar hidden" id="toolbar">
+    <input type="text" id="cityInput" class="city-input" placeholder="Ingresá tu ciudad, país (ej: Montevideo,UY)">
+    <button class="go-btn" id="goBtn">Buscar</button>
+  </div>
+
+  <div class="widget">
+    <div class="widget-row">
+      <div class="left">
+        <div>
+          <div class="city-row" id="cityRow" title="Tocá para buscar otra ciudad">
+            <span class="city-name" id="cityName">—</span>
+          </div>
+          <div class="big-temp" id="bigTemp">—</div>
+        </div>
+        <div class="desc-text" id="descText"></div>
+      </div>
+
+      <div class="right" id="forecastRight">
+        <!-- filas JS -->
+      </div>
+    </div>
+
+    <div class="footer-brand">Aparicio Weather</div>
+  </div>
+
+  <div class="status" id="status"></div>
+</div>
+
+<script>
+const API_KEY = "207c1ef5132b69b9aa87857887184d6b";
+
+const cityInput = document.getElementById('cityInput');
+const goBtn = document.getElementById('goBtn');
+const toolbar = document.getElementById('toolbar');
+const cityRow = document.getElementById('cityRow');
+const cityNameEl = document.getElementById('cityName');
+const bigTempEl = document.getElementById('bigTemp');
+const descTextEl = document.getElementById('descText');
+const forecastRight = document.getElementById('forecastRight');
+const statusEl = document.getElementById('status');
+
+const DIAS = ['DOM','LUN','MAR','MIÉ','JUE','VIE','SÁB'];
+
+/* -------- escala fija para las barras (°C) -------- */
+const SCALE_MIN = -5;
+const SCALE_MAX = 40;
+
+/* mapea una temperatura a un color del espectro térmico (azul -> cian -> verde -> amarillo -> naranja -> rojo) */
+function tempToColor(t){
+  const stops = [
+    { t: -5, c: [58, 130, 255] },   // azul frío
+    { t: 5,  c: [64, 200, 255] },   // cian
+    { t: 15, c: [90, 220, 150] },   // verde
+    { t: 22, c: [230, 220, 90] },   // amarillo
+    { t: 30, c: [255, 150, 60] },   // naranja
+    { t: 40, c: [255, 80, 70] }     // rojo
+  ];
+  let clamped = Math.max(SCALE_MIN, Math.min(SCALE_MAX, t));
+  for(let i=0;i<stops.length-1;i++){
+    const a = stops[i], b = stops[i+1];
+    if(clamped >= a.t && clamped <= b.t){
+      const ratio = (clamped - a.t) / (b.t - a.t);
+      const c = a.c.map((v,idx) => Math.round(v + (b.c[idx]-v)*ratio));
+      return `rgb(${c[0]},${c[1]},${c[2]})`;
+    }
+  }
+  return `rgb(${stops[stops.length-1].c.join(',')})`;
+}
+
+/* -------- iconos climaticos planos -------- */
+function weatherIcon(code, size){
+  const main = code.slice(0,2);
+  const isNight = code.endsWith('n');
+  const s = size || 19;
+
+  const sun = `<circle cx="12" cy="12" r="5" fill="#ffcc4d"/>`;
+  const moon = `<path d="M15 3.5c-4.7.6-8 4.7-7.4 9.4.6 4.7 4.7 8 9.4 7.4-2.8-1.6-4.6-4.7-5-8-.4-3.3.8-6.6 3-8.8z" fill="#e6e9f0"/>`;
+  const cloud = `<path d="M6.8 17.5h10.6a3.4 3.4 0 0 0 .3-6.8 5.2 5.2 0 0 0-10-1.7 3.9 3.9 0 0 0-1 8.5z" fill="#ffffff"/>`;
+  const cloudSmall = `<path d="M8 17.2h8.2a2.6 2.6 0 0 0 .2-5.2 4 4 0 0 0-7.7-1.3 3 3 0 0 0-.7 6.5z" fill="#ffffff" opacity="0.95"/>`;
+  const rainLines = `<line x1="8" y1="18" x2="6.5" y2="21.5" stroke="#6fc3ff" stroke-width="1.6" stroke-linecap="round"/>
+    <line x1="12" y1="18" x2="10.5" y2="21.5" stroke="#6fc3ff" stroke-width="1.6" stroke-linecap="round"/>
+    <line x1="16" y1="18" x2="14.5" y2="21.5" stroke="#6fc3ff" stroke-width="1.6" stroke-linecap="round"/>`;
+  const snowFlakes = `<circle cx="8" cy="19.5" r="1" fill="#ffffff"/><circle cx="12" cy="20.5" r="1" fill="#ffffff"/><circle cx="16" cy="19.5" r="1" fill="#ffffff"/>`;
+  const bolt = `<path d="M13 13.5h-2.6l2-4.8-5 6.8h2.6l-2 5z" fill="#ffd166"/>`;
+  const fog = `<line x1="5" y1="10" x2="19" y2="10" stroke="#c7cbd6" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="4" y1="13.5" x2="20" y2="13.5" stroke="#c7cbd6" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="6" y1="17" x2="18" y2="17" stroke="#c7cbd6" stroke-width="1.5" stroke-linecap="round"/>`;
+
+  let inner = '';
+  switch(main){
+    case '01': inner = isNight ? moon : sun; break;
+    case '02': inner = (isNight ? moon : sun) + cloudSmall; break;
+    case '03':
+    case '04': inner = cloud; break;
+    case '09': inner = cloudSmall + rainLines; break;
+    case '10': inner = cloudSmall + rainLines; break;
+    case '11': inner = cloudSmall + bolt; break;
+    case '13': inner = cloudSmall + snowFlakes; break;
+    case '50': inner = fog; break;
+    default: inner = cloud;
+  }
+  return `<svg viewBox="0 0 24 24" width="${s}" height="${s}">${inner}</svg>`;
+}
+
+function setStatus(msg, isError=false){
+  statusEl.textContent = msg;
+  statusEl.className = 'status' + (isError ? ' error' : '');
+}
+
+async function fetchByCity(city){
+  lastQuery = city;
+  setStatus('Cargando...');
+  try{
+    const [currentRes, forecastRes] = await Promise.all([
+      fetch(`https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&appid=${API_KEY}&units=metric&lang=es`),
+      fetch(`https://api.openweathermap.org/data/2.5/forecast?q=${encodeURIComponent(city)}&appid=${API_KEY}&units=metric&lang=es`)
+    ]);
+    if(!currentRes.ok || !forecastRes.ok) throw new Error('No se encontró la ciudad o falló la API');
+    render(await currentRes.json(), await forecastRes.json());
+    setStatus('');
+  }catch(err){
+    setStatus(err.message, true);
+    if(!locationSet) showToolbar();
+  }
+}
+
+/* jerarquía de severidad climática: mayor número = condición más "fuerte" */
+function weatherSeverity(main){
+  const rank = { Thunderstorm: 6, Snow: 5, Rain: 4, Drizzle: 3, Clouds: 2 };
+  return rank[main] ?? 1; // Clear, Mist, etc. quedan como severidad baja
+}
+
+function buildDailyForecast(forecast){
+  const groups = {};
+  forecast.list.forEach(item => {
+    const date = item.dt_txt.split(' ')[0];
+    const hour = parseInt(item.dt_txt.split(' ')[1].split(':')[0]);
+    if(!groups[date]) groups[date] = { blocks: [], min: Infinity, max: -Infinity, pop: 0 };
+    const g = groups[date];
+    g.blocks.push({ hour, item });
+    g.min = Math.min(g.min, item.main.temp_min);
+    g.max = Math.max(g.max, item.main.temp_max);
+    g.pop = Math.max(g.pop, item.pop || 0);
+  });
+  const todayStr = new Date().toISOString().split('T')[0];
+  return Object.keys(groups).sort().map(dateStr => {
+    const g = groups[dateStr];
+    // elige el bloque más representativo: primero por severidad de la condición
+    // (para que un día con lluvia en algún momento SIEMPRE muestre ícono de lluvia),
+    // y como desempate, el más cercano al mediodía.
+    const rep = g.blocks.reduce((best, b) => {
+      const bSeverity = weatherSeverity(b.item.weather[0].main);
+      const bestSeverity = weatherSeverity(best.item.weather[0].main);
+      if(bSeverity !== bestSeverity) return bSeverity > bestSeverity ? b : best;
+      return Math.abs(b.hour - 12) < Math.abs(best.hour - 12) ? b : best;
+    }).item;
+    return {
+      dateStr,
+      isToday: dateStr === todayStr,
+      icon: rep.weather[0].icon,
+      desc: rep.weather[0].description,
+      min: Math.round(g.min),
+      max: Math.round(g.max),
+      pop: Math.round(g.pop * 100)
+    };
+  });
+}
+
+function render(current, forecast){
+  const days = buildDailyForecast(forecast);
+  const today = days[0];
+
+  cityNameEl.textContent = current.name;
+  bigTempEl.textContent = `${Math.round(current.temp ?? current.main.temp)}°`;
+
+  // texto predictivo abajo a la izquierda
+  const rainSoon = today && today.pop >= 5;
+  const desc = current.weather[0].description;
+  descTextEl.textContent = rainSoon
+    ? `Probabilidad de lluvia del ${today.pop}%. ${cap(desc)}, máxima de ${today.max}°.`
+    : `${cap(desc)}. Máxima de ${today ? today.max : Math.round(current.main.temp_max)}°.`;
+
+  const list = days.slice(0, 5);
+  forecastRight.innerHTML = list.map(d => {
+    const dayLabel = d.isToday ? 'HOY' : DIAS[new Date(d.dateStr + 'T00:00:00').getDay()];
+    const left = ((d.min - SCALE_MIN) / (SCALE_MAX - SCALE_MIN)) * 100;
+    const width = ((d.max - d.min) / (SCALE_MAX - SCALE_MIN)) * 100;
+    const colorStart = tempToColor(d.min);
+    const colorEnd = tempToColor(d.max);
+    const popHtml = d.pop >= 5 ? `${d.pop}%` : '';
+
+    return `
+      <div class="day-row">
+        <div class="day-name">${dayLabel}</div>
+        <div class="day-icon">${weatherIcon(d.icon, 19)}</div>
+        <div class="day-pop">${popHtml}</div>
+        <div class="temp-min">${d.min}°</div>
+        <div class="bar-track">
+          <div class="bar-fill" style="left:${left}%; width:${Math.max(width,4)}%; background:linear-gradient(90deg, ${colorStart}, ${colorEnd});"></div>
+        </div>
+        <div class="temp-max">${d.max}°</div>
+      </div>
+    `;
+  }).join('');
+
+  locationSet = true;
+  hideToolbar();
+
+  try{
+    if(canPersist) localStorage.setItem(STORAGE_KEY, lastQuery);
+  }catch(e){ /* no debería pasar ya que canPersist lo verificó antes */ }
+}
+
+function cap(s){ return s.charAt(0).toUpperCase() + s.slice(1); }
+
+let locationSet = false;
+let lastQuery = null; // guarda la última ciudad consultada para el auto-refresh
+const STORAGE_KEY = 'aparicio_clima_ciudad';
+
+// detecta si localStorage realmente funciona en este contexto
+// (falla en iframes con sandbox restringido o en file:// en algunos navegadores)
+function storageAvailable(){
+  try{
+    const testKey = '__aparicio_test__';
+    localStorage.setItem(testKey, '1');
+    localStorage.removeItem(testKey);
+    return true;
+  }catch(e){
+    return false;
+  }
+}
+const canPersist = storageAvailable();
+
+function showToolbar(){
+  toolbar.classList.remove('hidden');
+  cityInput.focus();
+  cityInput.select();
+}
+function hideToolbar(){
+  toolbar.classList.add('hidden');
+}
+
+goBtn.addEventListener('click', () => {
+  const city = cityInput.value.trim();
+  if(city) fetchByCity(city);
+});
+cityInput.addEventListener('keydown', (e) => { if(e.key === 'Enter') goBtn.click(); });
+
+// una vez establecida la ubicación, la barra solo se despliega al tocar el nombre de la ciudad
+cityRow.addEventListener('click', () => {
+  if(!locationSet) return; // antes de la primera ubicación ya está visible
+  if(toolbar.classList.contains('hidden')) showToolbar();
+  else hideToolbar();
+});
+
+// al cargar la página: si ya hay una ciudad guardada de una visita anterior, se usa directo.
+// si no, se pide que la ingrese (sin ciudad por defecto).
+let savedCity = null;
+if(canPersist){
+  try{
+    savedCity = localStorage.getItem(STORAGE_KEY);
+  }catch(e){ /* no debería pasar */ }
+}
+
+if(savedCity){
+  cityInput.value = savedCity;
+  fetchByCity(savedCity);
+}else{
+  setTimeout(() => {
+    setStatus(canPersist
+      ? 'Ingresá una ciudad para comenzar'
+      : 'Ingresá una ciudad (este entorno no permite guardarla)');
+    showToolbar();
+  }, 1000);
+}
+
+// auto-actualización cada 1 hora, reutilizando la última ciudad consultada
+const ONE_HOUR_MS = 60 * 60 * 1000;
+setInterval(() => {
+  if(lastQuery) fetchByCity(lastQuery);
+}, ONE_HOUR_MS);
+</script>
+
+</body>
+</html>
