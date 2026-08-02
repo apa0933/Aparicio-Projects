@@ -15,7 +15,6 @@
     --dim:rgba(255,255,255,0.55);
     --dim-strong:rgba(255,255,255,0.8);
     --divider:rgba(255,255,255,0.08);
-    --track:rgba(255,255,255,0.12);
   }
   *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
   html,body{
@@ -90,7 +89,7 @@
     align-items:stretch;
   }
 
-    .left{
+  .left{
     flex:0 0 auto;
     width:150px;
     display:flex;
@@ -130,7 +129,7 @@
     max-width:150px;
   }
 
-    .right{
+  .right{
     flex:1;
     display:flex;
     flex-direction:column;
@@ -141,7 +140,7 @@
 
   .day-row{
     display:grid;
-    grid-template-columns: 30px 22px 38px 24px 1fr 26px;
+    grid-template-columns: 45px 30px 1fr 35px 35px;
     align-items:center;
     column-gap:6px;
     padding:5px 0;
@@ -151,11 +150,12 @@
     font-size:13px;
     font-weight:600;
     color:var(--white);
+    white-space:nowrap;
   }
 
   .day-icon{
-    width:19px;
-    height:19px;
+    width:24px;
+    height:24px;
     display:flex;
     align-items:center;
     justify-content:center;
@@ -175,18 +175,6 @@
     color:var(--dim);
     text-align:right;
     font-variant-numeric:tabular-nums;
-  }
-
-  .bar-track{
-    position:relative;
-    height:3px;
-    border-radius:2px;
-    background:var(--track);
-  }
-  .bar-fill{
-    position:absolute;
-    top:0; bottom:0;
-    border-radius:2px;
   }
 
   .temp-max{
@@ -215,7 +203,7 @@
     user-select:none;
   }
 
-    .skel{
+  .skel{
     display:inline-block;
     background:linear-gradient(100deg,
       rgba(255,255,255,0.06) 8%,
@@ -236,127 +224,51 @@
   .skel-desc-line{ display:block; width:100%; height:9px; border-radius:5px; margin-bottom:7px; }
   .skel-desc-line.short{ width:65%; }
 
-  .skel-day-name{ width:22px; height:11px; border-radius:5px; }
-  .skel-icon{ width:19px; height:19px; border-radius:50%; }
+  .skel-day-name{ width:30px; height:11px; border-radius:5px; }
+  .skel-icon{ width:24px; height:24px; border-radius:50%; }
   .skel-pop{ width:24px; height:10px; border-radius:5px; }
-  .skel-minmax{ width:18px; height:10px; border-radius:5px; margin-left:auto; }
-  .skel-track{ width:100%; height:3px; border-radius:2px; animation-duration:1.5s; }
+  .skel-minmax{ width:24px; height:10px; border-radius:5px; margin-left:auto; }
 
   .loading .day-row{ animation:fadeIn .3s ease; }
   @keyframes fadeIn{ from{ opacity:0; } to{ opacity:1; } }
 
-    @media (max-width: 600px){
-    .wrap{
-      width:100%;
-      max-width:380px;
-    }
-    .widget{
-      padding:22px 22px 12px;
-      border-radius:20px;
-    }
-    .widget-row{
-      gap:16px;
-    }
-    .left{
-      width:130px;
-    }
-    .big-temp{
-      font-size:56px;
-    }
-    .city-name{
-      font-size:15px;
-    }
-    .desc-text{
-      font-size:12.5px;
-      max-width:130px;
-    }
-    .right{
-      padding-left:16px;
-    }
-    .day-row{
-      grid-template-columns: 28px 20px 34px 22px 1fr 24px;
-      column-gap:5px;
-    }
-    .day-name, .temp-min, .temp-max{
-      font-size:12.5px;
-    }
-    .day-pop{
-      font-size:11px;
-    }
+  @media (max-width: 600px){
+    .wrap{ width:100%; max-width:380px; }
+    .widget{ padding:22px 22px 12px; border-radius:20px; }
+    .widget-row{ gap:16px; }
+    .left{ width:130px; }
+    .big-temp{ font-size:56px; }
+    .city-name{ font-size:15px; }
+    .desc-text{ font-size:12.5px; max-width:130px; }
+    .right{ padding-left:16px; }
+    .day-row{ grid-template-columns: 42px 26px 1fr 32px 32px; column-gap:5px; }
+    .day-name, .temp-min, .temp-max{ font-size:12.5px; }
+    .day-pop{ font-size:11px; }
+    .skel-icon{ width:26px; height:26px; }
+    .city-input{ font-size:16px; }
   }
 
-    @media (max-width: 460px){
-    .wrap{
-      max-width:340px;
-    }
-    .widget{
-      padding:20px 18px 12px;
-    }
-    .widget-row{
-      flex-direction:column;
-      gap:18px;
-    }
-    .left{
-      width:100%;
-      align-items:center;
-      text-align:center;
-    }
-    .left > div{
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-    }
-    .city-row{
-      justify-content:center;
-    }
-    .desc-text{
-      max-width:100%;
-      text-align:center;
-    }
-    .right{
-      border-left:none;
-      border-top:1px solid var(--divider);
-      padding-left:0;
-      padding-top:16px;
-      width:100%;
-    }
-    .day-row{
-      grid-template-columns: 32px 22px 38px 24px 1fr 28px;
-      column-gap:8px;
-      padding:6px 0;
-    }
-    .day-name, .temp-min, .temp-max{
-      font-size:13px;
-    }
+  @media (max-width: 460px){
+    .wrap{ max-width:340px; }
+    .widget{ padding:20px 18px 12px; }
+    .widget-row{ flex-direction:column; gap:18px; }
+    .left{ width:100%; align-items:center; text-align:center; }
+    .left > div{ display:flex; flex-direction:column; align-items:center; }
+    .city-row{ justify-content:center; }
+    .desc-text{ max-width:100%; text-align:center; }
+    .right{ border-left:none; border-top:1px solid var(--divider); padding-left:0; padding-top:16px; width:100%; }
+    .day-row{ grid-template-columns: 45px 28px 1fr 35px 35px; column-gap:8px; padding:6px 0; }
+    .day-name, .temp-min, .temp-max{ font-size:13px; }
   }
 
-    @media (max-width: 340px){
-    .big-temp{
-      font-size:48px;
-    }
-    .city-name{
-      font-size:14px;
-    }
-    .day-row{
-      grid-template-columns: 28px 20px 32px 22px 1fr 24px;
-      column-gap:5px;
-    }
-    .day-name, .temp-min, .temp-max{
-      font-size:12px;
-    }
-    .day-pop{
-      font-size:10.5px;
-    }
-    .day-icon{
-      width:17px;
-      height:17px;
-    }
-  }
-
-    @media (max-width: 600px){
-    .city-input{
-      font-size:16px;
-    }
+  @media (max-width: 340px){
+    .big-temp{ font-size:48px; }
+    .city-name{ font-size:14px; }
+    .day-row{ grid-template-columns: 38px 24px 1fr 30px 30px; column-gap:5px; }
+    .day-name, .temp-min, .temp-max{ font-size:12px; }
+    .day-pop{ font-size:10.5px; }
+    .day-icon{ width:24px; height:24px; }
+    .skel-icon{ width:24px; height:24px; }
   }
 </style>
 </head>
@@ -407,34 +319,10 @@ const statusEl = document.getElementById('status');
 
 const DIAS = ['DOM','LUN','MAR','MIÉ','JUE','VIE','SÁB'];
 
-const SCALE_MIN = -5;
-const SCALE_MAX = 40;
-
-function tempToColor(t){
-  const stops = [
-    { t: -5, c: [58, 130, 255] },
-    { t: 5,  c: [64, 200, 255] },
-    { t: 15, c: [90, 220, 150] },
-    { t: 22, c: [230, 220, 90] },
-    { t: 30, c: [255, 150, 60] },
-    { t: 40, c: [255, 80, 70] }
-  ];
-  let clamped = Math.max(SCALE_MIN, Math.min(SCALE_MAX, t));
-  for(let i=0;i<stops.length-1;i++){
-    const a = stops[i], b = stops[i+1];
-    if(clamped >= a.t && clamped <= b.t){
-      const ratio = (clamped - a.t) / (b.t - a.t);
-      const c = a.c.map((v,idx) => Math.round(v + (b.c[idx]-v)*ratio));
-      return `rgb(${c[0]},${c[1]},${c[2]})`;
-    }
-  }
-  return `rgb(${stops[stops.length-1].c.join(',')})`;
-}
-
 function weatherIcon(code, size){
   const main = code.slice(0,2);
   const isNight = code.endsWith('n');
-  const s = size || 19;
+  const s = size || 24;
 
   const sun = `<circle cx="12" cy="12" r="5" fill="#ffcc4d"/>`;
   const moon = `<path d="M15 3.5c-4.7.6-8 4.7-7.4 9.4.6 4.7 4.7 8 9.4 7.4-2.8-1.6-4.6-4.7-5-8-.4-3.3.8-6.6 3-8.8z" fill="#e6e9f0"/>`;
@@ -481,7 +369,6 @@ function showSkeleton(){
       <div class="skel skel-icon"></div>
       <div class="skel skel-pop"></div>
       <div class="skel skel-minmax"></div>
-      <div class="bar-track"><div class="skel skel-track"></div></div>
       <div class="skel skel-minmax"></div>
     </div>
   `).join('');
@@ -559,21 +446,14 @@ function render(current, forecast){
   const list = days.slice(0, 5);
   forecastRight.innerHTML = list.map(d => {
     const dayLabel = d.isToday ? 'HOY' : DIAS[new Date(d.dateStr + 'T00:00:00').getDay()];
-    const left = ((d.min - SCALE_MIN) / (SCALE_MAX - SCALE_MIN)) * 100;
-    const width = ((d.max - d.min) / (SCALE_MAX - SCALE_MIN)) * 100;
-    const colorStart = tempToColor(d.min);
-    const colorEnd = tempToColor(d.max);
     const popHtml = d.pop >= 5 ? `${d.pop}%` : '';
 
     return `
       <div class="day-row">
         <div class="day-name">${dayLabel}</div>
-        <div class="day-icon">${weatherIcon(d.icon, 19)}</div>
+        <div class="day-icon">${weatherIcon(d.icon, 24)}</div>
         <div class="day-pop">${popHtml}</div>
         <div class="temp-min">${d.min}°</div>
-        <div class="bar-track">
-          <div class="bar-fill" style="left:${left}%; width:${Math.max(width,4)}%; background:linear-gradient(90deg, ${colorStart}, ${colorEnd});"></div>
-        </div>
         <div class="temp-max">${d.max}°</div>
       </div>
     `;
