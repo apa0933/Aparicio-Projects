@@ -8,528 +8,478 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  :root{
-    --bg-page:#15161b;
-    --bg-widget:#2c303b;
-    --white:#ffffff;
-    --dim:rgba(255,255,255,0.55);
-    --dim-strong:rgba(255,255,255,0.8);
-    --divider:rgba(255,255,255,0.08);
-  }
-  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
-  html,body{
-    margin:0;
-    min-height:100%;
-    background:transparent;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    padding:0;
-    font-family:'Fredoka', "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    color:var(--white);
-  }
-
-  .wrap{
-    width:440px;
-    max-width:100%;
-  }
-
-  .toolbar{
-    display:flex;
-    gap:8px;
-    margin-bottom:12px;
-    max-height:44px;
-    opacity:1;
-    overflow:hidden;
-    transition:max-height .25s ease, opacity .2s ease, margin-bottom .25s ease;
-  }
-  .toolbar.hidden{
-    max-height:0;
-    opacity:0;
-    margin-bottom:0;
-    pointer-events:none;
-  }
-  .city-input{
-    flex:1;
-    background: rgba(255,255,255,0.08);
-    border:1px solid rgba(255,255,255,0.14);
-    border-radius:10px;
-    padding:8px 12px;
-    color:var(--white);
-    font-family:inherit;
-    font-size:13px;
-    outline:none;
-  }
-  .city-input::placeholder{color:rgba(255,255,255,0.35);}
-  .go-btn{
-    background: rgba(255,255,255,0.1);
-    border:1px solid rgba(255,255,255,0.16);
-    color:var(--white);
-    border-radius:10px;
-    padding:8px 14px;
-    font-family:inherit;
-    font-size:13px;
-    font-weight:600;
-    cursor:pointer;
-  }
-  .go-btn:active{background: rgba(255,255,255,0.2);}
-
-  .widget{
-    background:var(--bg-widget);
-    border-radius:24px;
-    padding:25px 25px 14px;
-    display:flex;
-    flex-direction:column;
-    box-shadow:0 10px 30px rgba(0,0,0,0.35);
-  }
-
-  .widget-row{
-    display:flex;
-    gap:22px;
-    align-items:stretch;
-  }
-
-  .left{
-    flex:0 0 auto;
-    width:150px;
-    display:flex;
-    flex-direction:column;
-    justify-content:space-between;
-  }
-
-  .city-row{
-    display:flex;
-    align-items:center;
-    gap:5px;
-    cursor:pointer;
-    user-select:none;
-  }
-  .city-name{
-    font-size:16px;
-    font-weight:600;
-    letter-spacing:0.1px;
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis;
-  }
-
-  .big-temp{
-    font-size:64px;
-    font-weight:300;
-    line-height:1;
-    margin:6px 0 8px;
-    letter-spacing:-1.5px;
-  }
-
-  .desc-text{
-    font-size:13px;
-    font-weight:400;
-    color:var(--dim);
-    line-height:1.35;
-    max-width:150px;
-  }
-
-  .right{
-    flex:1;
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-    border-left:1px solid var(--divider);
-    padding-left:20px;
-  }
-
-  .day-row{
-    display:grid;
-    grid-template-columns: 45px 30px 1fr 35px 35px;
-    align-items:center;
-    column-gap:6px;
-    padding:5px 0;
-  }
-
-  .day-name{
-    font-size:13px;
-    font-weight:600;
-    color:var(--white);
-    white-space:nowrap;
-  }
-
-  .day-icon{
-    width:24px;
-    height:24px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-  }
-  .day-icon svg{width:100%; height:100%;}
-
-  .day-pop{
-    font-size:11.5px;
-    font-weight:600;
-    color:#6fc3ff;
-    text-align:left;
-    font-variant-numeric:tabular-nums;
-  }
-
-  .temp-min{
-    font-size:13px;
-    color:var(--dim);
-    text-align:right;
-    font-variant-numeric:tabular-nums;
-  }
-
-  .temp-max{
-    font-size:13px;
-    font-weight:600;
-    color:var(--white);
-    text-align:right;
-    font-variant-numeric:tabular-nums;
-  }
-
-  .status{
-    text-align:center;
-    font-size:12.5px;
-    color:var(--dim);
-    padding:10px 0 0;
-  }
-  .status.error{ color:#ff9a9a; }
-
-  .footer-brand{
-    text-align:center;
-    font-size:10px;
-    font-weight:600;
-    letter-spacing:0.4px;
-    color:rgba(255,255,255,0.12);
-    margin-top:4px;
-    user-select:none;
-  }
-
-  .skel{
-    display:inline-block;
-    background:linear-gradient(100deg,
-      rgba(255,255,255,0.06) 8%,
-      rgba(255,255,255,0.16) 22%,
-      rgba(255,255,255,0.06) 36%);
-    background-size:250% 100%;
-    animation:shimmer 1.5s ease-in-out infinite;
-    border-radius:8px;
-    vertical-align:middle;
-  }
-  @keyframes shimmer{
-    0%{ background-position:180% 0; }
-    100%{ background-position:-80% 0; }
-  }
-
-  .skel-city{ width:72px; height:14px; border-radius:6px; }
-  .skel-temp{ width:112px; height:58px; border-radius:14px; }
-  .skel-desc-line{ display:block; width:100%; height:9px; border-radius:5px; margin-bottom:7px; }
-  .skel-desc-line.short{ width:65%; }
-
-  .skel-day-name{ width:30px; height:11px; border-radius:5px; }
-  .skel-icon{ width:24px; height:24px; border-radius:50%; }
-  .skel-pop{ width:24px; height:10px; border-radius:5px; }
-  .skel-minmax{ width:24px; height:10px; border-radius:5px; margin-left:auto; }
-
-  .loading .day-row{ animation:fadeIn .3s ease; }
-  @keyframes fadeIn{ from{ opacity:0; } to{ opacity:1; } }
-
-  @media (max-width: 600px){
-    .wrap{ width:100%; max-width:380px; }
-    .widget{ padding:22px 22px 12px; border-radius:20px; }
-    .widget-row{ gap:16px; }
-    .left{ width:130px; }
-    .big-temp{ font-size:56px; }
-    .city-name{ font-size:15px; }
-    .desc-text{ font-size:12.5px; max-width:130px; }
-    .right{ padding-left:16px; }
-    .day-row{ grid-template-columns: 42px 26px 1fr 32px 32px; column-gap:5px; }
-    .day-name, .temp-min, .temp-max{ font-size:12.5px; }
-    .day-pop{ font-size:11px; }
-    .skel-icon{ width:26px; height:26px; }
-    .city-input{ font-size:16px; }
-  }
-
-  @media (max-width: 460px){
-    .wrap{ max-width:340px; }
-    .widget{ padding:20px 18px 12px; }
-    .widget-row{ flex-direction:column; gap:18px; }
-    .left{ width:100%; align-items:center; text-align:center; }
-    .left > div{ display:flex; flex-direction:column; align-items:center; }
-    .city-row{ justify-content:center; }
-    .desc-text{ max-width:100%; text-align:center; }
-    .right{ border-left:none; border-top:1px solid var(--divider); padding-left:0; padding-top:16px; width:100%; }
-    .day-row{ grid-template-columns: 45px 28px 1fr 35px 35px; column-gap:8px; padding:6px 0; }
-    .day-name, .temp-min, .temp-max{ font-size:13px; }
-  }
-
-  @media (max-width: 340px){
-    .big-temp{ font-size:48px; }
-    .city-name{ font-size:14px; }
-    .day-row{ grid-template-columns: 38px 24px 1fr 30px 30px; column-gap:5px; }
-    .day-name, .temp-min, .temp-max{ font-size:12px; }
-    .day-pop{ font-size:10.5px; }
-    .day-icon{ width:24px; height:24px; }
-    .skel-icon{ width:24px; height:24px; }
-  }
+:root{
+--bg-widget:#2c303b;
+--white:#ffffff;
+--dim:rgba(255,255,255,0.55);
+--dim-strong:rgba(255,255,255,0.85);
+--divider:rgba(255,255,255,0.08);
+--rain:#6fc3ff;
+--cols:54px 26px 1fr 34px 34px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{
+margin:0;
+min-height:100%;
+background:transparent;
+display:flex;
+align-items:center;
+justify-content:center;
+padding:0;
+font-family:'Fredoka',"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+color:var(--white);
+}
+.wrap{width:440px;max-width:100%;}
+.toolbar{
+display:flex;
+gap:8px;
+margin-bottom:12px;
+max-height:44px;
+opacity:1;
+overflow:hidden;
+transition:max-height .25s ease,opacity .2s ease,margin-bottom .25s ease;
+}
+.toolbar.hidden{max-height:0;opacity:0;margin-bottom:0;pointer-events:none;}
+.city-input{
+flex:1;
+background:rgba(255,255,255,0.08);
+border:1px solid rgba(255,255,255,0.14);
+border-radius:10px;
+padding:8px 12px;
+color:var(--white);
+font-family:inherit;
+font-size:13px;
+outline:none;
+}
+.city-input::placeholder{color:rgba(255,255,255,0.35);}
+.go-btn{
+background:rgba(255,255,255,0.1);
+border:1px solid rgba(255,255,255,0.16);
+color:var(--white);
+border-radius:10px;
+padding:8px 14px;
+font-family:inherit;
+font-size:13px;
+font-weight:600;
+cursor:pointer;
+}
+.go-btn:active{background:rgba(255,255,255,0.2);}
+.widget{
+background:var(--bg-widget);
+border-radius:24px;
+padding:25px 25px 14px;
+display:flex;
+flex-direction:column;
+box-shadow:0 10px 30px rgba(0,0,0,0.35);
+}
+.widget-row{display:flex;gap:22px;align-items:stretch;}
+.left{
+flex:0 0 auto;
+width:150px;
+display:flex;
+flex-direction:column;
+justify-content:space-between;
+gap:12px;
+}
+.city-row{display:flex;align-items:center;gap:5px;cursor:pointer;user-select:none;}
+.city-name{
+font-size:16px;
+font-weight:600;
+white-space:nowrap;
+overflow:hidden;
+text-overflow:ellipsis;
+}
+.big-temp{
+font-size:64px;
+font-weight:300;
+line-height:1;
+margin:6px 0 8px;
+letter-spacing:-1.5px;
+}
+.desc-text{
+font-size:14px;
+font-weight:500;
+color:var(--dim-strong);
+line-height:1.3;
+}
+.rain-note{
+font-size:12px;
+font-weight:500;
+color:var(--rain);
+line-height:1.3;
+margin-top:4px;
+}
+.meta{display:flex;flex-direction:column;gap:3px;}
+.meta-item{
+display:flex;
+justify-content:space-between;
+font-size:12px;
+color:var(--dim);
+}
+.meta-item b{font-weight:600;color:var(--white);font-variant-numeric:tabular-nums;}
+.right{
+flex:1;
+display:flex;
+flex-direction:column;
+justify-content:center;
+border-left:1px solid var(--divider);
+padding-left:20px;
+}
+.day-head,.day-row{
+display:grid;
+grid-template-columns:var(--cols);
+align-items:center;
+column-gap:6px;
+}
+.day-head{
+padding:0 0 4px;
+margin-bottom:2px;
+border-bottom:1px solid var(--divider);
+font-size:10.5px;
+font-weight:500;
+color:var(--dim);
+}
+.day-head span:nth-child(3){text-align:left;}
+.day-head span:nth-child(4),.day-head span:nth-child(5){text-align:right;}
+.day-row{padding:5px 0;}
+.day-row.today .day-name{color:var(--rain);}
+.day-name{font-size:13px;font-weight:600;white-space:nowrap;}
+.day-icon{width:24px;height:24px;display:flex;align-items:center;justify-content:center;}
+.day-icon svg{width:100%;height:100%;}
+.day-pop{
+font-size:11.5px;
+font-weight:600;
+color:var(--rain);
+text-align:left;
+font-variant-numeric:tabular-nums;
+}
+.day-pop.none{color:rgba(255,255,255,0.25);font-weight:400;}
+.temp-min{font-size:13px;color:var(--dim);text-align:right;font-variant-numeric:tabular-nums;}
+.temp-max{font-size:13px;font-weight:600;text-align:right;font-variant-numeric:tabular-nums;}
+.status{text-align:center;font-size:12.5px;color:var(--dim);padding:10px 0 0;}
+.status.error{color:#ff9a9a;}
+.footer-brand{
+text-align:center;
+font-size:10px;
+font-weight:500;
+letter-spacing:0.3px;
+color:rgba(255,255,255,0.22);
+margin-top:6px;
+user-select:none;
+}
+.skel{
+display:inline-block;
+background:linear-gradient(100deg,rgba(255,255,255,0.06) 8%,rgba(255,255,255,0.16) 22%,rgba(255,255,255,0.06) 36%);
+background-size:250% 100%;
+animation:shimmer 1.5s ease-in-out infinite;
+border-radius:8px;
+vertical-align:middle;
+}
+@keyframes shimmer{0%{background-position:180% 0;}100%{background-position:-80% 0;}}
+.skel-city{width:72px;height:14px;border-radius:6px;}
+.skel-temp{width:112px;height:58px;border-radius:14px;}
+.skel-line{display:block;width:100%;height:9px;border-radius:5px;margin-bottom:7px;}
+.skel-line.short{width:65%;}
+.skel-day-name{width:30px;height:11px;border-radius:5px;}
+.skel-icon{width:24px;height:24px;border-radius:50%;}
+.skel-pop{width:24px;height:10px;border-radius:5px;}
+.skel-minmax{width:24px;height:10px;border-radius:5px;margin-left:auto;}
+@media (max-width:600px){
+.wrap{width:100%;max-width:380px;}
+.widget{padding:22px 22px 12px;border-radius:20px;}
+.widget-row{gap:16px;}
+.left{width:130px;}
+.big-temp{font-size:56px;}
+.city-name{font-size:15px;}
+.desc-text{font-size:13px;}
+.right{padding-left:16px;--cols:52px 26px 1fr 32px 32px;}
+.city-input{font-size:16px;}
+}
+@media (max-width:460px){
+.wrap{max-width:340px;}
+.widget{padding:20px 18px 12px;}
+.widget-row{flex-direction:column;gap:18px;}
+.left{width:100%;align-items:center;text-align:center;}
+.left>div{display:flex;flex-direction:column;align-items:center;width:100%;}
+.city-row{justify-content:center;}
+.meta{width:100%;max-width:220px;}
+.right{border-left:none;border-top:1px solid var(--divider);padding-left:0;padding-top:16px;width:100%;--cols:56px 28px 1fr 35px 35px;}
+}
+@media (max-width:340px){
+.big-temp{font-size:48px;}
+.city-name{font-size:14px;}
+.right{--cols:50px 24px 1fr 30px 30px;}
+.day-name,.temp-min,.temp-max{font-size:12px;}
+}
 </style>
 </head>
 <body>
-
 <div class="wrap">
-
-  <div class="toolbar hidden" id="toolbar">
-    <input type="text" id="cityInput" class="city-input" placeholder="Ingresá tu ciudad, país (ej: Montevideo,UY)">
-    <button class="go-btn" id="goBtn">Buscar</button>
-  </div>
-
-  <div class="widget">
-    <div class="widget-row">
-      <div class="left">
-        <div>
-          <div class="city-row" id="cityRow" title="Tocá para buscar otra ciudad">
-            <span class="city-name" id="cityName">—</span>
-          </div>
-          <div class="big-temp" id="bigTemp">—</div>
-        </div>
-        <div class="desc-text" id="descText"></div>
-      </div>
-
-      <div class="right" id="forecastRight">
-        <!-- filas JS -->
-      </div>
-    </div>
-
-    <div class="footer-brand">Aparicio Weather</div>
-  </div>
-
-  <div class="status" id="status"></div>
+<div class="toolbar hidden" id="toolbar">
+<input type="text" id="cityinput" class="city-input" placeholder="Ingresá tu ciudad, país (ej: Montevideo,UY)">
+<button class="go-btn" id="gobtn">Buscar</button>
 </div>
-
+<div class="widget">
+<div class="widget-row">
+<div class="left">
+<div>
+<div class="city-row" id="cityrow" title="Tocá para buscar otra ciudad">
+<span class="city-name" id="cityname">—</span>
+</div>
+<div class="big-temp" id="bigtemp">—</div>
+<div class="desc-text" id="desctext"></div>
+<div class="rain-note" id="rainnote"></div>
+</div>
+<div class="meta" id="meta"></div>
+</div>
+<div class="right" id="forecastright"></div>
+</div>
+<div class="footer-brand" id="footer">Aparicio Weather</div>
+</div>
+<div class="status" id="status"></div>
+</div>
 <script>
-const API_KEY = "207c1ef5132b69b9aa87857887184d6b";
-
-const cityInput = document.getElementById('cityInput');
-const goBtn = document.getElementById('goBtn');
+const api_key = "207c1ef5132b69b9aa87857887184d6b";
+const storage_key = 'aparicio_clima_ciudad';
+const cityinput = document.getElementById('cityinput');
+const gobtn = document.getElementById('gobtn');
 const toolbar = document.getElementById('toolbar');
-const cityRow = document.getElementById('cityRow');
-const cityNameEl = document.getElementById('cityName');
-const bigTempEl = document.getElementById('bigTemp');
-const descTextEl = document.getElementById('descText');
-const forecastRight = document.getElementById('forecastRight');
-const statusEl = document.getElementById('status');
+const cityrow = document.getElementById('cityrow');
+const citynameel = document.getElementById('cityname');
+const bigtempel = document.getElementById('bigtemp');
+const desctextel = document.getElementById('desctext');
+const rainnoteel = document.getElementById('rainnote');
+const metael = document.getElementById('meta');
+const forecastright = document.getElementById('forecastright');
+const statusel = document.getElementById('status');
+const footerel = document.getElementById('footer');
+const dias = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+let locationset = false;
+let lastquery = null;
+let lastfetch = 0;
 
-const DIAS = ['DOM','LUN','MAR','MIÉ','JUE','VIE','SÁB'];
-
-function weatherIcon(code, size){
-  const main = code.slice(0,2);
-  const isNight = code.endsWith('n');
-  const s = size || 24;
-
-  const sun = `<circle cx="12" cy="12" r="5" fill="#ffcc4d"/>`;
-  const moon = `<path d="M15 3.5c-4.7.6-8 4.7-7.4 9.4.6 4.7 4.7 8 9.4 7.4-2.8-1.6-4.6-4.7-5-8-.4-3.3.8-6.6 3-8.8z" fill="#e6e9f0"/>`;
-  const cloud = `<path d="M6.8 17.5h10.6a3.4 3.4 0 0 0 .3-6.8 5.2 5.2 0 0 0-10-1.7 3.9 3.9 0 0 0-1 8.5z" fill="#ffffff"/>`;
-  const cloudSmall = `<path d="M8 17.2h8.2a2.6 2.6 0 0 0 .2-5.2 4 4 0 0 0-7.7-1.3 3 3 0 0 0-.7 6.5z" fill="#ffffff" opacity="0.95"/>`;
-  const rainLines = `<line x1="8" y1="18" x2="6.5" y2="21.5" stroke="#6fc3ff" stroke-width="1.6" stroke-linecap="round"/>
-    <line x1="12" y1="18" x2="10.5" y2="21.5" stroke="#6fc3ff" stroke-width="1.6" stroke-linecap="round"/>
-    <line x1="16" y1="18" x2="14.5" y2="21.5" stroke="#6fc3ff" stroke-width="1.6" stroke-linecap="round"/>`;
-  const snowFlakes = `<circle cx="8" cy="19.5" r="1" fill="#ffffff"/><circle cx="12" cy="20.5" r="1" fill="#ffffff"/><circle cx="16" cy="19.5" r="1" fill="#ffffff"/>`;
-  const bolt = `<path d="M13 13.5h-2.6l2-4.8-5 6.8h2.6l-2 5z" fill="#ffd166"/>`;
-  const fog = `<line x1="5" y1="10" x2="19" y2="10" stroke="#c7cbd6" stroke-width="1.5" stroke-linecap="round"/>
-    <line x1="4" y1="13.5" x2="20" y2="13.5" stroke="#c7cbd6" stroke-width="1.5" stroke-linecap="round"/>
-    <line x1="6" y1="17" x2="18" y2="17" stroke="#c7cbd6" stroke-width="1.5" stroke-linecap="round"/>`;
-
-  let inner = '';
-  switch(main){
-    case '01': inner = isNight ? moon : sun; break;
-    case '02': inner = (isNight ? moon : sun) + cloudSmall; break;
-    case '03':
-    case '04': inner = cloud; break;
-    case '09': inner = cloudSmall + rainLines; break;
-    case '10': inner = cloudSmall + rainLines; break;
-    case '11': inner = cloudSmall + bolt; break;
-    case '13': inner = cloudSmall + snowFlakes; break;
-    case '50': inner = fog; break;
-    default: inner = cloud;
-  }
-  return `<svg viewBox="0 0 24 24" width="${s}" height="${s}">${inner}</svg>`;
+function weathericon(code,size){
+const main = code.slice(0,2);
+const isnight = code.endsWith('n');
+const s = size || 24;
+const sun = `<circle cx="12" cy="12" r="5" fill="#ffcc4d"/>`;
+const moon = `<path d="M15 3.5c-4.7.6-8 4.7-7.4 9.4.6 4.7 4.7 8 9.4 7.4-2.8-1.6-4.6-4.7-5-8-.4-3.3.8-6.6 3-8.8z" fill="#e6e9f0"/>`;
+const cloud = `<path d="M6.8 17.5h10.6a3.4 3.4 0 0 0 .3-6.8 5.2 5.2 0 0 0-10-1.7 3.9 3.9 0 0 0-1 8.5z" fill="#ffffff"/>`;
+const cloudsmall = `<path d="M8 17.2h8.2a2.6 2.6 0 0 0 .2-5.2 4 4 0 0 0-7.7-1.3 3 3 0 0 0-.7 6.5z" fill="#ffffff" opacity="0.95"/>`;
+const rainlines = `<line x1="8" y1="18" x2="6.5" y2="21.5" stroke="#6fc3ff" stroke-width="1.6" stroke-linecap="round"/><line x1="12" y1="18" x2="10.5" y2="21.5" stroke="#6fc3ff" stroke-width="1.6" stroke-linecap="round"/><line x1="16" y1="18" x2="14.5" y2="21.5" stroke="#6fc3ff" stroke-width="1.6" stroke-linecap="round"/>`;
+const snowflakes = `<circle cx="8" cy="19.5" r="1" fill="#ffffff"/><circle cx="12" cy="20.5" r="1" fill="#ffffff"/><circle cx="16" cy="19.5" r="1" fill="#ffffff"/>`;
+const bolt = `<path d="M13 13.5h-2.6l2-4.8-5 6.8h2.6l-2 5z" fill="#ffd166"/>`;
+const fog = `<line x1="5" y1="10" x2="19" y2="10" stroke="#c7cbd6" stroke-width="1.5" stroke-linecap="round"/><line x1="4" y1="13.5" x2="20" y2="13.5" stroke="#c7cbd6" stroke-width="1.5" stroke-linecap="round"/><line x1="6" y1="17" x2="18" y2="17" stroke="#c7cbd6" stroke-width="1.5" stroke-linecap="round"/>`;
+let inner = '';
+switch(main){
+case '01': inner = isnight ? moon : sun; break;
+case '02': inner = (isnight ? moon : sun) + cloudsmall; break;
+case '03':
+case '04': inner = cloud; break;
+case '09':
+case '10': inner = cloudsmall + rainlines; break;
+case '11': inner = cloudsmall + bolt; break;
+case '13': inner = cloudsmall + snowflakes; break;
+case '50': inner = fog; break;
+default: inner = cloud;
+}
+return `<svg viewBox="0 0 24 24" width="${s}" height="${s}">${inner}</svg>`;
 }
 
-function setStatus(msg, isError=false){
-  statusEl.textContent = msg;
-  statusEl.className = 'status' + (isError ? ' error' : '');
+function setstatus(msg,iserror=false){
+statusel.textContent = msg;
+statusel.className = 'status' + (iserror ? ' error' : '');
 }
 
-function showSkeleton(){
-  cityNameEl.innerHTML = '<span class="skel skel-city"></span>';
-  bigTempEl.innerHTML = '<span class="skel skel-temp"></span>';
-  descTextEl.innerHTML = '<span class="skel skel-desc-line"></span><span class="skel skel-desc-line short"></span>';
-
-  forecastRight.innerHTML = Array.from({ length: 5 }).map(() => `
-    <div class="day-row loading">
-      <div class="skel skel-day-name"></div>
-      <div class="skel skel-icon"></div>
-      <div class="skel skel-pop"></div>
-      <div class="skel skel-minmax"></div>
-      <div class="skel skel-minmax"></div>
-    </div>
-  `).join('');
+function headhtml(){
+return `<div class="day-head"><span>Día</span><span></span><span>Lluvia</span><span>Mín</span><span>Máx</span></div>`;
 }
 
-async function fetchByCity(city){
-  lastQuery = city;
-  if(!locationSet) showSkeleton();
-  setStatus('');
-  try{
-    const [currentRes, forecastRes] = await Promise.all([
-      fetch(`https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&appid=${API_KEY}&units=metric&lang=es`),
-      fetch(`https://api.openweathermap.org/data/2.5/forecast?q=${encodeURIComponent(city)}&appid=${API_KEY}&units=metric&lang=es`)
-    ]);
-    if(!currentRes.ok || !forecastRes.ok) throw new Error('No se encontró la ciudad o falló la API');
-    render(await currentRes.json(), await forecastRes.json());
-    setStatus('');
-  }catch(err){
-    setStatus(err.message, true);
-    if(!locationSet) showToolbar();
-  }
+function showskeleton(){
+citynameel.innerHTML = '<span class="skel skel-city"></span>';
+bigtempel.innerHTML = '<span class="skel skel-temp"></span>';
+desctextel.innerHTML = '<span class="skel skel-line"></span><span class="skel skel-line short"></span>';
+rainnoteel.textContent = '';
+metael.innerHTML = '';
+forecastright.innerHTML = headhtml() + Array.from({length:5}).map(() => `
+<div class="day-row">
+<div class="skel skel-day-name"></div>
+<div class="skel skel-icon"></div>
+<div class="skel skel-pop"></div>
+<div class="skel skel-minmax"></div>
+<div class="skel skel-minmax"></div>
+</div>
+`).join('');
 }
 
-function weatherSeverity(main){
-  const rank = { Thunderstorm: 6, Snow: 5, Rain: 4, Drizzle: 3, Clouds: 2 };
-  return rank[main] ?? 1;
+async function fetchbycity(city){
+lastquery = city;
+if(!locationset) showskeleton();
+setstatus('');
+try{
+const [currentres,forecastres] = await Promise.all([
+fetch(`https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&appid=${api_key}&units=metric&lang=es`),
+fetch(`https://api.openweathermap.org/data/2.5/forecast?q=${encodeURIComponent(city)}&appid=${api_key}&units=metric&lang=es`)
+]);
+if(!currentres.ok || !forecastres.ok) throw new Error('No se encontró la ciudad o falló la API');
+render(await currentres.json(),await forecastres.json());
+lastfetch = Date.now();
+setstatus('');
+}catch(err){
+setstatus(err.message,true);
+if(!locationset) showtoolbar();
+}
 }
 
-function buildDailyForecast(forecast){
-  const groups = {};
-  forecast.list.forEach(item => {
-    const date = item.dt_txt.split(' ')[0];
-    const hour = parseInt(item.dt_txt.split(' ')[1].split(':')[0]);
-    if(!groups[date]) groups[date] = { blocks: [], min: Infinity, max: -Infinity, pop: 0 };
-    const g = groups[date];
-    g.blocks.push({ hour, item });
-    g.min = Math.min(g.min, item.main.temp_min);
-    g.max = Math.max(g.max, item.main.temp_max);
-    g.pop = Math.max(g.pop, item.pop || 0);
-  });
-  const todayStr = new Date().toISOString().split('T')[0];
-  return Object.keys(groups).sort().map(dateStr => {
-    const g = groups[dateStr];
-    const rep = g.blocks.reduce((best, b) => {
-      const bSeverity = weatherSeverity(b.item.weather[0].main);
-      const bestSeverity = weatherSeverity(best.item.weather[0].main);
-      if(bSeverity !== bestSeverity) return bSeverity > bestSeverity ? b : best;
-      return Math.abs(b.hour - 12) < Math.abs(best.hour - 12) ? b : best;
-    }).item;
-    return {
-      dateStr,
-      isToday: dateStr === todayStr,
-      icon: rep.weather[0].icon,
-      desc: rep.weather[0].description,
-      min: Math.round(g.min),
-      max: Math.round(g.max),
-      pop: Math.round(g.pop * 100)
-    };
-  });
+function weatherseverity(main){
+const rank = {Thunderstorm:6,Snow:5,Rain:4,Drizzle:3,Clouds:2};
+return rank[main] ?? 1;
 }
 
-function render(current, forecast){
-  const days = buildDailyForecast(forecast);
-  const today = days[0];
-
-  cityNameEl.textContent = current.name;
-  bigTempEl.textContent = `${Math.round(current.temp ?? current.main.temp)}°`;
-
-  const rainSoon = today && today.pop >= 5;
-  const desc = current.weather[0].description;
-  descTextEl.textContent = rainSoon
-    ? `Probabilidad de lluvia del ${today.pop}%. ${cap(desc)}, máxima de ${today.max}°.`
-    : `${cap(desc)}. Máxima de ${today ? today.max : Math.round(current.main.temp_max)}°.`;
-
-  const list = days.slice(0, 5);
-  forecastRight.innerHTML = list.map(d => {
-    const dayLabel = d.isToday ? 'HOY' : DIAS[new Date(d.dateStr + 'T00:00:00').getDay()];
-    const popHtml = d.pop >= 5 ? `${d.pop}%` : '';
-
-    return `
-      <div class="day-row">
-        <div class="day-name">${dayLabel}</div>
-        <div class="day-icon">${weatherIcon(d.icon, 24)}</div>
-        <div class="day-pop">${popHtml}</div>
-        <div class="temp-min">${d.min}°</div>
-        <div class="temp-max">${d.max}°</div>
-      </div>
-    `;
-  }).join('');
-
-  locationSet = true;
-  hideToolbar();
-
-  try{
-    if(canPersist) localStorage.setItem(STORAGE_KEY, lastQuery);
-  }catch(e){  }
-}
-
-function cap(s){ return s.charAt(0).toUpperCase() + s.slice(1); }
-
-let locationSet = false;
-let lastQuery = null;
-const STORAGE_KEY = 'aparicio_clima_ciudad';
-
-function storageAvailable(){
-  try{
-    const testKey = '__aparicio_test__';
-    localStorage.setItem(testKey, '1');
-    localStorage.removeItem(testKey);
-    return true;
-  }catch(e){
-    return false;
-  }
-}
-const canPersist = storageAvailable();
-
-function showToolbar(){
-  toolbar.classList.remove('hidden');
-  cityInput.focus();
-  cityInput.select();
-}
-function hideToolbar(){
-  toolbar.classList.add('hidden');
-}
-
-goBtn.addEventListener('click', () => {
-  const city = cityInput.value.trim();
-  if(city) fetchByCity(city);
+function builddaily(current,forecast){
+const tz = forecast.city && typeof forecast.city.timezone === 'number' ? forecast.city.timezone : (current.timezone || 0);
+const localdate = ts => new Date((ts + tz) * 1000).toISOString().slice(0,10);
+const localhour = ts => new Date((ts + tz) * 1000).getUTCHours();
+const nowts = Math.floor(Date.now() / 1000);
+const todaystr = localdate(nowts);
+const groups = {};
+const newgroup = () => ({blocks:[],min:Infinity,max:-Infinity,pop:0});
+forecast.list.forEach(item => {
+const date = localdate(item.dt);
+if(!groups[date]) groups[date] = newgroup();
+const g = groups[date];
+g.blocks.push({hour:localhour(item.dt),item});
+g.min = Math.min(g.min,item.main.temp_min);
+g.max = Math.max(g.max,item.main.temp_max);
+g.pop = Math.max(g.pop,item.pop || 0);
 });
-cityInput.addEventListener('keydown', (e) => { if(e.key === 'Enter') goBtn.click(); });
-
-cityRow.addEventListener('click', () => {
-  if(!locationSet) return;
-  if(toolbar.classList.contains('hidden')) showToolbar();
-  else hideToolbar();
-});
-
-let savedCity = null;
-if(canPersist){
-  try{
-    savedCity = localStorage.getItem(STORAGE_KEY);
-  }catch(e){  }
-}
-
-if(savedCity){
-  cityInput.value = savedCity;
-  fetchByCity(savedCity);
+if(!groups[todaystr]) groups[todaystr] = newgroup();
+const t = groups[todaystr];
+t.min = Math.min(t.min,current.main.temp);
+t.max = Math.max(t.max,current.main.temp);
+return Object.keys(groups).filter(d => d >= todaystr).sort().slice(0,5).map(datestr => {
+const g = groups[datestr];
+const istoday = datestr === todaystr;
+let icon;
+let desc;
+if(istoday){
+icon = current.weather[0].icon;
+desc = current.weather[0].description;
 }else{
-  setTimeout(() => {
-    setStatus(canPersist
-      ? 'Ingresá una ciudad para comenzar'
-      : 'Ingresá una ciudad (este entorno no permite guardarla)');
-    showToolbar();
-  }, 1000);
+const rep = g.blocks.reduce((best,b) => {
+const bs = weatherseverity(b.item.weather[0].main);
+const bests = weatherseverity(best.item.weather[0].main);
+if(bs !== bests) return bs > bests ? b : best;
+return Math.abs(b.hour - 12) < Math.abs(best.hour - 12) ? b : best;
+}).item;
+icon = rep.weather[0].icon.replace('n','d');
+desc = rep.weather[0].description;
+}
+return {
+datestr,
+istoday,
+icon,
+desc,
+min:Math.round(g.min),
+max:Math.round(g.max),
+pop:Math.round(g.pop * 100)
+};
+});
 }
 
-const ONE_HOUR_MS = 60 * 60 * 1000;
-setInterval(() => {
-  if(lastQuery) fetchByCity(lastQuery);
-}, ONE_HOUR_MS);
-</script>
+function render(current,forecast){
+const days = builddaily(current,forecast);
+const today = days[0];
+citynameel.textContent = current.name;
+bigtempel.textContent = `${Math.round(current.main.temp)}°`;
+desctextel.textContent = cap(current.weather[0].description);
+rainnoteel.textContent = today && today.pop >= 30 ? `Lluvia hoy: ${today.pop}%` : '';
+const viento = Math.round((current.wind ? current.wind.speed : 0) * 3.6);
+metael.innerHTML = `
+<div class="meta-item"><span>Sensación</span><b>${Math.round(current.main.feels_like)}°</b></div>
+<div class="meta-item"><span>Humedad</span><b>${current.main.humidity}%</b></div>
+<div class="meta-item"><span>Viento</span><b>${viento} km/h</b></div>
+`;
+forecastright.innerHTML = headhtml() + days.map((d,i) => {
+const label = i === 0 ? 'Hoy' : i === 1 ? 'Mañana' : dias[new Date(d.datestr + 'T00:00:00Z').getUTCDay()];
+const pophtml = d.pop >= 10 ? `<div class="day-pop">${d.pop}%</div>` : `<div class="day-pop none">–</div>`;
+return `
+<div class="day-row${d.istoday ? ' today' : ''}">
+<div class="day-name">${label}</div>
+<div class="day-icon">${weathericon(d.icon,24)}</div>
+${pophtml}
+<div class="temp-min">${d.min}°</div>
+<div class="temp-max">${d.max}°</div>
+</div>
+`;
+}).join('');
+const hora = new Date().toLocaleTimeString('es',{hour:'2-digit',minute:'2-digit'});
+footerel.textContent = `Aparicio Weather · actualizado ${hora}`;
+locationset = true;
+hidetoolbar();
+try{
+if(canpersist) localStorage.setItem(storage_key,lastquery);
+}catch(e){}
+}
 
+function cap(s){return s.charAt(0).toUpperCase() + s.slice(1);}
+
+function storageavailable(){
+try{
+const testkey = '__aparicio_test__';
+localStorage.setItem(testkey,'1');
+localStorage.removeItem(testkey);
+return true;
+}catch(e){
+return false;
+}
+}
+const canpersist = storageavailable();
+
+function showtoolbar(){
+toolbar.classList.remove('hidden');
+cityinput.focus();
+cityinput.select();
+}
+function hidetoolbar(){
+toolbar.classList.add('hidden');
+}
+
+gobtn.addEventListener('click',() => {
+const city = cityinput.value.trim();
+if(city) fetchbycity(city);
+});
+cityinput.addEventListener('keydown',e => {if(e.key === 'Enter') gobtn.click();});
+cityrow.addEventListener('click',() => {
+if(!locationset) return;
+if(toolbar.classList.contains('hidden')) showtoolbar();
+else hidetoolbar();
+});
+
+let savedcity = null;
+if(canpersist){
+try{
+savedcity = localStorage.getItem(storage_key);
+}catch(e){}
+}
+
+if(savedcity){
+cityinput.value = savedcity;
+fetchbycity(savedcity);
+}else{
+setTimeout(() => {
+setstatus(canpersist ? 'Ingresá una ciudad para comenzar' : 'Ingresá una ciudad (este entorno no permite guardarla)');
+showtoolbar();
+},1000);
+}
+
+setInterval(() => {
+if(lastquery) fetchbycity(lastquery);
+},30 * 60 * 1000);
+
+document.addEventListener('visibilitychange',() => {
+if(document.visibilityState === 'visible' && lastquery && Date.now() - lastfetch > 10 * 60 * 1000) fetchbycity(lastquery);
+});
+</script>
 </body>
 </html>
