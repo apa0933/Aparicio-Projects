@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Clima</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -42,6 +42,7 @@ transition:max-height .25s ease,opacity .2s ease,margin-bottom .25s ease;
 .toolbar.hidden{max-height:0;opacity:0;margin-bottom:0;pointer-events:none;}
 .city-input{
 flex:1;
+min-width:0;
 background:rgba(255,255,255,0.08);
 border:1px solid rgba(255,255,255,0.14);
 border-radius:10px;
@@ -102,13 +103,6 @@ font-weight:500;
 color:var(--dim-strong);
 line-height:1.3;
 }
-.rain-note{
-font-size:12px;
-font-weight:500;
-color:var(--rain);
-line-height:1.3;
-margin-top:4px;
-}
 .meta{display:flex;flex-direction:column;gap:3px;}
 .meta-item{
 display:flex;
@@ -138,6 +132,7 @@ border-bottom:1px solid var(--divider);
 font-size:10.5px;
 font-weight:500;
 color:var(--dim);
+min-height:19px;
 }
 .day-head span:nth-child(3){text-align:left;}
 .day-head span:nth-child(4),.day-head span:nth-child(5){text-align:right;}
@@ -184,33 +179,36 @@ vertical-align:middle;
 .skel-icon{width:24px;height:24px;border-radius:50%;}
 .skel-pop{width:24px;height:10px;border-radius:5px;}
 .skel-minmax{width:24px;height:10px;border-radius:5px;margin-left:auto;}
-@media (max-width:600px){
-.wrap{width:100%;max-width:380px;}
-.widget{padding:22px 22px 12px;border-radius:20px;}
-.widget-row{gap:16px;}
-.left{width:130px;}
-.big-temp{font-size:56px;}
-.city-name{font-size:15px;}
-.desc-text{font-size:13px;}
-.right{padding-left:16px;--cols:52px 26px 1fr 32px 32px;}
-.city-input{font-size:16px;}
-}
-@media (max-width:460px){
-.wrap{max-width:340px;}
-.widget{padding:20px 18px 12px;}
-.widget-row{flex-direction:column;gap:18px;}
-.left{width:100%;align-items:center;text-align:center;}
-.left>div{display:flex;flex-direction:column;align-items:center;width:100%;}
-.city-row{justify-content:center;}
-.meta{width:100%;max-width:220px;}
-.right{border-left:none;border-top:1px solid var(--divider);padding-left:0;padding-top:16px;width:100%;--cols:56px 28px 1fr 35px 35px;}
-}
-@media (max-width:340px){
-.big-temp{font-size:48px;}
-.city-name{font-size:14px;}
-.right{--cols:50px 24px 1fr 30px 30px;}
-.day-name,.temp-min,.temp-max{font-size:12px;}
-}
+
+html[data-mov]{--cols:48px 28px 1fr 38px 38px;}
+html[data-mov] body{padding:10px;padding-left:max(10px,env(safe-area-inset-left));padding-right:max(10px,env(safe-area-inset-right));}
+html[data-mov] .wrap{width:100%;}
+html[data-mov] .widget{padding:20px 18px 12px;border-radius:22px;}
+html[data-mov] .widget-row{flex-direction:column;gap:14px;}
+html[data-mov] .left{width:100%;flex-direction:row;align-items:flex-end;justify-content:space-between;gap:14px;}
+html[data-mov] .left>div:first-child{min-width:0;flex:1;}
+html[data-mov] .meta{flex:0 0 auto;min-width:118px;gap:4px;}
+html[data-mov] .meta-item{gap:16px;font-size:12.5px;}
+html[data-mov] .right{border-left:none;border-top:1px solid var(--divider);padding:12px 0 0;width:100%;}
+html[data-mov] .day-row{padding:6px 0;}
+html[data-mov] .city-row{padding:2px 0;}
+html[data-mov] .city-input{font-size:16px;padding:10px 12px;}
+html[data-mov] .go-btn{min-height:42px;}
+html[data-mov] .toolbar{max-height:52px;}
+html[data-mov] .toolbar.hidden{max-height:0;}
+html[data-tam="md"]{--cols:56px 30px 1fr 42px 42px;}
+html[data-tam="md"] .big-temp{font-size:62px;}
+html[data-tam="sm"] .big-temp{font-size:56px;}
+html[data-tam="sm"] .city-name{font-size:15px;}
+html[data-tam="xs"]{--cols:42px 24px 1fr 34px 34px;}
+html[data-tam="xs"] body{padding:6px;}
+html[data-tam="xs"] .widget{padding:16px 14px 10px;border-radius:18px;}
+html[data-tam="xs"] .big-temp{font-size:46px;}
+html[data-tam="xs"] .city-name{font-size:14px;}
+html[data-tam="xs"] .desc-text{font-size:12.5px;}
+html[data-tam="xs"] .meta{min-width:104px;}
+html[data-tam="xs"] .meta-item{font-size:11.5px;gap:10px;}
+html[data-tam="xs"] .day-name,html[data-tam="xs"] .temp-min,html[data-tam="xs"] .temp-max{font-size:12px;}
 </style>
 </head>
 <body>
@@ -228,7 +226,6 @@ vertical-align:middle;
 </div>
 <div class="big-temp" id="bigtemp">—</div>
 <div class="desc-text" id="desctext"></div>
-<div class="rain-note" id="rainnote"></div>
 </div>
 <div class="meta" id="meta"></div>
 </div>
@@ -241,6 +238,7 @@ vertical-align:middle;
 <script>
 const api_key = "207c1ef5132b69b9aa87857887184d6b";
 const storage_key = 'aparicio_clima_ciudad';
+const root = document.documentElement;
 const cityinput = document.getElementById('cityinput');
 const gobtn = document.getElementById('gobtn');
 const toolbar = document.getElementById('toolbar');
@@ -248,7 +246,6 @@ const cityrow = document.getElementById('cityrow');
 const citynameel = document.getElementById('cityname');
 const bigtempel = document.getElementById('bigtemp');
 const desctextel = document.getElementById('desctext');
-const rainnoteel = document.getElementById('rainnote');
 const metael = document.getElementById('meta');
 const forecastright = document.getElementById('forecastright');
 const statusel = document.getElementById('status');
@@ -257,6 +254,17 @@ const dias = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
 let locationset = false;
 let lastquery = null;
 let lastfetch = 0;
+
+function ajustar(){
+const w = Math.min(innerWidth,root.clientWidth || innerWidth);
+const tam = w <= 349 ? 'xs' : w <= 429 ? 'sm' : w <= 520 ? 'md' : 'lg';
+root.dataset.tam = tam;
+if(tam === 'lg') delete root.dataset.mov;
+else root.dataset.mov = '';
+}
+ajustar();
+addEventListener('resize',ajustar);
+addEventListener('orientationchange',ajustar);
 
 function weathericon(code,size){
 const main = code.slice(0,2);
@@ -299,17 +307,16 @@ statusel.textContent = msg;
 statusel.className = 'status' + (iserror ? ' error' : '');
 }
 
-function headhtml(){
-return `<div class="day-head"><span>Día</span><span></span><span>Lluvia</span><span>Mín</span><span>Máx</span></div>`;
+function headhtml(showrain){
+return `<div class="day-head"><span>Día</span><span></span><span>${showrain ? 'Lluvia' : ''}</span><span>Mín</span><span>Máx</span></div>`;
 }
 
 function showskeleton(){
 citynameel.innerHTML = '<span class="skel skel-city"></span>';
 bigtempel.innerHTML = '<span class="skel skel-temp"></span>';
 desctextel.innerHTML = '<span class="skel skel-line"></span><span class="skel skel-line short"></span>';
-rainnoteel.textContent = '';
 metael.innerHTML = '';
-forecastright.innerHTML = headhtml() + Array.from({length:5}).map(() => `
+forecastright.innerHTML = headhtml(true) + Array.from({length:5}).map(() => `
 <div class="day-row">
 <div class="skel skel-day-name"></div>
 <div class="skel skel-icon"></div>
@@ -397,20 +404,19 @@ pop:Math.round(g.pop * 100)
 
 function render(current,forecast){
 const days = builddaily(current,forecast);
-const today = days[0];
+const anyrain = days.some(d => d.pop > 0);
 citynameel.textContent = current.name;
 bigtempel.textContent = `${Math.round(current.main.temp)}°`;
 desctextel.textContent = cap(current.weather[0].description);
-rainnoteel.textContent = today && today.pop >= 30 ? `Lluvia hoy: ${today.pop}%` : '';
 const viento = Math.round((current.wind ? current.wind.speed : 0) * 3.6);
 metael.innerHTML = `
 <div class="meta-item"><span>Sensación</span><b>${Math.round(current.main.feels_like)}°</b></div>
 <div class="meta-item"><span>Humedad</span><b>${current.main.humidity}%</b></div>
 <div class="meta-item"><span>Viento</span><b>${viento} km/h</b></div>
 `;
-forecastright.innerHTML = headhtml() + days.map((d,i) => {
+forecastright.innerHTML = headhtml(anyrain) + days.map((d,i) => {
 const label = i === 0 ? 'Hoy' : dias[new Date(d.datestr + 'T00:00:00Z').getUTCDay()];
-const pophtml = `<div class="day-pop${d.pop < 20 ? ' low' : ''}">${d.pop}%</div>`;
+const pophtml = d.pop > 0 ? `<div class="day-pop${d.pop < 20 ? ' low' : ''}">${d.pop}%</div>` : `<div class="day-pop"></div>`;
 return `
 <div class="day-row${d.istoday ? ' today' : ''}">
 <div class="day-name">${label}</div>
